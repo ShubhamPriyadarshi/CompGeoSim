@@ -2,8 +2,6 @@ using System;
 using System.Numerics;
 using static System.Console;
 
-
-
 public class SurfaceCover
 {
     int numOfBuildings;
