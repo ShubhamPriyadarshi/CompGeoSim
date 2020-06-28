@@ -181,7 +181,6 @@ public class SurfaceCover {
 			if (onTop) {
 				m1 = FindSlope(sCor.X, buildingData[bisectionPoint, 0].X, sCor.Y, buildingData[bisectionPoint, 0].Y);
 				minSlope = m1;
-				//print("ONTOP MINSLOPE" + m1);
 				minSlopeIndex = bisectionPoint;
 				maxSlopeIndex = bisectionPoint;
 				maxheight = buildingData[bisectionPoint, 3].Y;
@@ -190,10 +189,7 @@ public class SurfaceCover {
 				if (!onTop && sCor.Y > buildingData[bisectionPoint - 1, 0].Y) //Sun is above the next building//////
 				{
 					surfaceValue += FindDistance(buildingData[bisectionPoint - 1, 3], buildingData[bisectionPoint - 1, 0]);
-					//DrawLine(buildingData[bisectionPoint - 1, 3], buildingData[bisectionPoint - 1, 0]);
 					surfaceValue += FindDistance(buildingData[bisectionPoint - 1, 3], buildingData[bisectionPoint - 1, 2]);
-					//DrawLine(buildingData[bisectionPoint - 1, 3], buildingData[bisectionPoint - 1, 2]);
-					//if (bisectionPoint < numOfBuildings) //TryNOW
 					m1 = FindSlope(sCor.X, buildingData[bisectionPoint - 1, 0].X, sCor.Y, buildingData[bisectionPoint - 1, 0].Y);
 					minSlope = m1;
 					maxSlopeIndex = bisectionPoint - 1;
@@ -312,7 +308,7 @@ public class SurfaceCover {
 								partialPoint.X = FindX(buildingData[i, 0].Y, minSlope, c);
 
 								surfaceValue += FindDistance(buildingData[i, 0], partialPoint);
-								//DrawLine(buildingData[i, 0], partialPoint);
+
 								partial = false;
 							}
 							else {
@@ -326,7 +322,6 @@ public class SurfaceCover {
 					sunLow = true;
 					if (buildingData[i, 0].Y <= maxheight) //building is shorter than max height
 					{
-						//print("------------------------------BUiLDING IGNORED" + i + " MAX HEIGHT-------------------");
 						continue;
 					}
 					else {
@@ -445,7 +440,6 @@ public class SurfaceCover {
 								partial = false;
 							}
 							else {
-								//Debug.Log("M2<M1");
 								partial = true;
 							}
 
@@ -473,12 +467,11 @@ public class SurfaceCover {
 						}
 						else if (j == 3) {
 							if (m2 >= minSlope && partial == true) {
-								//m3 = FindSlope(sCor.X, buildingData[i - 1, 3].X, sCor.Y, buildingData[i - 1, 3].Y);
+
 								c = FindYIntercept(sCor.X, sCor.Y, minSlope);
 								partialPoint.Y = buildingData[i, 3].Y;
 								partialPoint.X = FindX(buildingData[i, 3].Y, minSlope, c);
 								surfaceValue += FindDistance(buildingData[i, 3], partialPoint);
-								//DrawLine(buildingData[i, 3], partialPoint);
 								partial = false;
 							}
 							else {
