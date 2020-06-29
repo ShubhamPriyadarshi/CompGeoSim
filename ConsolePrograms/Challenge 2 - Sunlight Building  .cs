@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using static System.Console;
 
 public class SurfaceCover {
@@ -18,23 +19,24 @@ public class SurfaceCover {
 			this.Y = y;
 		}
 	}
-
 	static public void Main(string[] args) {
 		SurfaceCover SC = new SurfaceCover();
 		string userInput;
 
 		WriteLine("Enter n x 4 x 2 array consisting the coordinates of n buildings in 2-D, where n is number of buildings");
 		userInput = ReadLine();
-		userInput = userInput.Replace("]], [[", " ").Replace("],[", " ").Replace("[", "").Replace("]", "");
+		userInput = userInput.Replace("]], [[", " ").Replace("]],", " ").Replace("],[", " ").Replace("[", "").Replace("]", "").Trim();
+		userInput = Regex.Replace(userInput, @"\s+", " ");
 		string[] buildingDataRaw = userInput.Split(' ');
 		while (! (buildingDataRaw.Length % 4 == 0) && !(buildingDataRaw.Length == 0)) {
 			WriteLine("Wrong number of coordinates or wrong format, please try again. ( FORMAT: [[[4,0],[4,-5],[7,-5],[7,0]], [[0.4,-2],[0.4,-5],[2.5,-5],[2.5,-2]]] )");
 			WriteLine("Enter n x 4 x 2 array consisting the coordinates of n buildings in 2-D, where n is number of buildings");
 			userInput = ReadLine();
-			userInput = userInput.Replace("]], [[", " ").Replace("],[", " ").Replace("[", "").Replace("]", "");
+			userInput = userInput.Replace("]], [[", " ").Replace("],[", " ").Replace("[", "").Replace("]", "").Trim();
+			userInput = Regex.Replace(userInput, @"\s+", " ");
 			buildingDataRaw = userInput.Split(' ');
 		}
-		SC.ProcessRawCoordinates(userInput, 0);
+		SC.ProcessRawCoordinates(buildingDataRaw, 0);
 		WriteLine("Enter the coordinates of source of light in 2-D");
 		userInput = ReadLine();
 		string[] pointCoordinates = userInput.Split(',');
@@ -45,29 +47,24 @@ public class SurfaceCover {
 			userInput = ReadLine();
 			pointCoordinates = userInput.Split(',');
 		}
-		SC.ProcessRawCoordinates(userInput, 1);
+		SC.ProcessRawCoordinates(pointCoordinates, 1);
 		SC.bisectionPoint = SC.Bisection();
 		float result = SC.CalculateSurface();
 		WriteLine("Output: " + result);
 	}
 
-	void ProcessRawCoordinates(string rawString, int mode) {
+	void ProcessRawCoordinates(string[] rawString, int mode) {
 		switch (mode) {
 		case(0):
-			rawString = rawString.Replace("]], [[", " ").Replace("],[", " ").Replace("[", "").Replace("]", "");
-			string[] buildingDataRaw = rawString.Split(' ');
-			numOfBuildings = buildingDataRaw.Length / 4;
-			BuildingCoordinates(buildingDataRaw);
+			numOfBuildings = rawString.Length / 4;
+			BuildingCoordinates(rawString);
 			break;
 
 		case (1):
-			string[] coord;
 			float coordX,
 			coordY;
-			rawString = rawString.Replace("[", "").Replace("]", "");
-			coord = rawString.Split(',');
-			coordX = Convert.ToSingle(coord[0]);
-			coordY = Convert.ToSingle(coord[1]);
+			coordX = Convert.ToSingle(rawString[0]);
+			coordY = Convert.ToSingle(rawString[1]);
 			sunCoordinates = new Vector2(coordX, coordY);
 			break;
 		}
