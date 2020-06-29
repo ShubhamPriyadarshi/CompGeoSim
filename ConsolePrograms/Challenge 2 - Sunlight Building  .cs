@@ -25,8 +25,28 @@ public class SurfaceCover
 	static public void Main(string[] args)
 	{
 		SurfaceCover SC = new SurfaceCover();
-		string userInput;
 
+		string[] rawBuildingCoordinates = SC.ReadBuildingCoordinates();
+		SC.ProcessRawCoordinates(rawBuildingCoordinates, 0);
+		string[] rawPointCoordinates = SC.ReadSunCoordinates();
+		SC.ProcessRawCoordinates(rawPointCoordinates, 1);
+		SC.bisectionPoint = SC.Bisection();
+		while (SC.bisectionPoint == -1)
+		{
+			WriteLine("Invalid Coordinates of the Sun ( It must be above the ground and not in between buildings) ");
+			rawPointCoordinates = SC.ReadSunCoordinates();
+			SC.ProcessRawCoordinates(rawPointCoordinates, 1);
+			SC.bisectionPoint = SC.Bisection();
+		}	
+		
+		float result = SC.CalculateSurface();
+		WriteLine("Output (Length of surface exposed to sunlight) : " + result);
+		
+	}
+
+	string[] ReadBuildingCoordinates()
+	{
+		string userInput;
 		WriteLine("Enter n x 4 x 2 array consisting the coordinates of n buildings in 2-D, where n is number of buildings");
 		userInput = ReadLine();
 		userInput = userInput.Replace("]], [[", " ").Replace("]],", " ").Replace("],[", " ").Replace("[", "").Replace("]", "").Trim();
@@ -41,7 +61,13 @@ public class SurfaceCover
 			userInput = Regex.Replace(userInput, @"\s+", " ");
 			buildingDataRaw = userInput.Split(' ');
 		}
-		SC.ProcessRawCoordinates(buildingDataRaw, 0);
+		return buildingDataRaw;
+
+	}
+
+	string[] ReadSunCoordinates()
+	{
+		string userInput;
 		WriteLine("Enter the coordinates of source of light in 2-D");
 		userInput = ReadLine();
 		string[] pointCoordinates = userInput.Split(',');
@@ -53,10 +79,7 @@ public class SurfaceCover
 			userInput = ReadLine();
 			pointCoordinates = userInput.Split(',');
 		}
-		SC.ProcessRawCoordinates(pointCoordinates, 1);
-		SC.bisectionPoint = SC.Bisection();
-		float result = SC.CalculateSurface();
-		WriteLine("Output: " + result);
+		return pointCoordinates;
 	}
 
 	void ProcessRawCoordinates(string[] rawString, int mode)
@@ -133,21 +156,41 @@ public class SurfaceCover
 		{
 			if (sunCoordinates.X < buildingData[i, 0].X)
 			{
-				sunRightmost = false;
-				onTop = false;
-				return i;
+				if (sunCoordinates.Y >= buildingData[i, 1].Y)
+				{
+					sunRightmost = false;
+					onTop = false;
+					return i;
+				}
+				else
+				{
+					return -1;
+				}
 			}
 			else if (sunCoordinates.X >= buildingData[i, 0].X && sunCoordinates.X <= buildingData[i, 3].X)
 			{
-				sunRightmost = false;
-				onTop = true;
-				return i;
-
+				if (sunCoordinates.Y > buildingData[i, 0].Y)
+				{
+					sunRightmost = false;
+					onTop = true;
+					return i;
+				}
+				else
+				{
+					return -1;
+				}
 			}
 		}
-		onTop = false;
-		sunRightmost = true;
-		return numOfBuildings - 1;
+		if (sunCoordinates.Y > buildingData[0, 1].Y)
+		{
+			onTop = false;
+			sunRightmost = true;
+			return numOfBuildings - 1;
+		}
+		else
+		{
+			return -1;
+		}
 	}
 
 	float FindSlope(float x1, float x2, float y1, float y2)
@@ -191,7 +234,7 @@ public class SurfaceCover
 
 			surfaceValue += FindDistance(buildingData[bisectionPoint, 3], buildingData[bisectionPoint, 0]);
 		}
-		if (bisectionPoint != 0) // START OF LEFT <<<<<<<<<<<<<<------------------------------------------------------------------------------------------
+		if (bisectionPoint != 0 || sunRightmost) // START OF LEFT <<<<<<<<<<<<<<------------------------------------------------------------------------------------------
 		{
 			sunLow = false;
 
